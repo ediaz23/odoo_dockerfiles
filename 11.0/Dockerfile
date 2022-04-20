@@ -31,7 +31,7 @@ RUN apt-get update && \
         python3-xlwt \
         xz-utils \
         python3-dev \
-        libssl1.0-dev \
+        libssl-dev \
         g++ \
         build-essential \
         wget \
@@ -40,6 +40,8 @@ RUN apt-get update && \
         iproute2 \
         libldap2-dev libsasl2-dev ldap-utils tox \
         lcov valgrind \
+        libxmlsec1-dev \
+        pkg-config libssl-dev libffi-dev \
     && curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.stretch_amd64.deb \
     && echo '7e35a63f9db14f93ec7feeb0fce76b30c08f2057 wkhtmltox.deb' | sha1sum -c - \
     && apt-get install -y --no-install-recommends ./wkhtmltox.deb \
@@ -47,44 +49,35 @@ RUN apt-get update && \
 
 # install latest postgresql-client
 RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
-        && GNUPGHOME="$(mktemp -d)" \
-        && export GNUPGHOME \
-        && repokey='B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8' \
-        && gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "${repokey}" \
-        && gpg --batch --armor --export "${repokey}" > /etc/apt/trusted.gpg.d/pgdg.gpg.asc \
-        && gpgconf --kill all \
-        && rm -rf "$GNUPGHOME" \
-        && apt-get update  \
-        && apt-get install --no-install-recommends -y postgresql-client \
-        && rm -f /etc/apt/sources.list.d/pgdg.list \
-        && rm -rf /var/lib/apt/lists/*
-
-# Install rtlcss (on Debian stretch)
-RUN echo "deb http://deb.nodesource.com/node_8.x stretch main" > /etc/apt/sources.list.d/nodesource.list \
     && GNUPGHOME="$(mktemp -d)" \
     && export GNUPGHOME \
-    && repokey='9FD3B784BC1C6FC31A8A0A1C1655A0AB68576280' \
+    && repokey='B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8' \
     && gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "${repokey}" \
-    && gpg --batch --armor --export "${repokey}" > /etc/apt/trusted.gpg.d/nodejs.gpg.asc \
+    && gpg --batch --armor --export "${repokey}" > /etc/apt/trusted.gpg.d/pgdg.gpg.asc \
     && gpgconf --kill all \
     && rm -rf "$GNUPGHOME" \
-    && apt-get update \
-    && apt-get install --no-install-recommends -y nodejs \
-    && npm install -g rtlcss \
+    && apt-get update  \
+    && apt-get install --no-install-recommends -y postgresql-client \
+    && rm -f /etc/apt/sources.list.d/pgdg.list \
     && rm -rf /var/lib/apt/lists/*
 
 
-COPY odoo12/ /usr/lib/python3/dist-packages/odoo
+COPY odoo11/ /usr/lib/python3/dist-packages/odoo
 RUN ln -s /usr/lib/python3/dist-packages/odoo/odoo-bin /usr/bin/odoo
 RUN rm -rf /usr/lib/python3/dist-packages/odoo/.git/*
 RUN rm -rf /usr/lib/python3/dist-packages/odoo/.github/*
 RUN rm -rf /usr/lib/python3/dist-packages/odoo/.settings/*
 RUN python3 -m pip install --upgrade pip 
-RUN pip install pydevd phonenumbers inotify odoorpc wheel zeep pdf417gen pdf2image setuptools
+RUN pip install pydevd phonenumbers inotify odoorpc wheel zeep pdf417gen pdf2image
 RUN pip install -r /usr/lib/python3/dist-packages/odoo/requirements.txt
+RUN pip install setuptools pandas xmlsec beautifulsoup4 pycrypto pyOpenSSL
+
+COPY python-meli/ /tmp/python-meli
+RUN pip install /tmp/python-meli/
+RUN rm -rf /tmp/python-meli/
 
 # Install Odoo
-ENV ODOO_VERSION 12.0
+ENV ODOO_VERSION 11.0
 
 
 # Copy entrypoint script and Odoo configuration file
@@ -112,3 +105,4 @@ USER odoo
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["odoo"]
+

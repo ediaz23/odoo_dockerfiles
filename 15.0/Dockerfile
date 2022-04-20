@@ -41,14 +41,14 @@ RUN apt-get update && \
         g++ \
         build-essential \
         wget \
-        python3-pip build-essential wget python3-dev python3-venv \
-        python3-wheel libfreetype6-dev libxml2-dev libzip-dev libldap2-dev libsasl2-dev \
-        python3-setuptools node-less libjpeg-dev zlib1g-dev libpq-dev \
-        libxslt1-dev libldap2-dev libtiff5-dev libjpeg62-turbo-dev libopenjp2-7-dev \
+        python3-venv \
+        python3-wheel libfreetype6-dev \
+        libtiff5-dev libjpeg62-turbo-dev libopenjp2-7-dev \
         liblcms2-dev libwebp-dev libharfbuzz-dev libfribidi-dev libxcb1-dev \
         libssl-dev \
         node-less \
         npm \
+        iproute2 \
     && curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
     && echo 'ea8277df4297afc507c61122f3c349af142f31e5 wkhtmltox.deb' | sha1sum -c - \
     && apt-get install -y --no-install-recommends ./wkhtmltox.deb \
@@ -73,8 +73,11 @@ RUN npm install -g rtlcss
 
 COPY odoo15/ /usr/lib/python3/dist-packages/odoo
 RUN ln -s /usr/lib/python3/dist-packages/odoo/odoo-bin /usr/bin/odoo
+RUN rm -rf /usr/lib/python3/dist-packages/odoo/.git/*
+RUN rm -rf /usr/lib/python3/dist-packages/odoo/.github/*
+RUN rm -rf /usr/lib/python3/dist-packages/odoo/.settings/*
 RUN python3 -m pip install --upgrade pip 
-RUN pip install pydevd phonenumbers inotify odoorpc wheel
+RUN pip install pydevd phonenumbers inotify odoorpc wheel zeep pdf417gen pyOpenSSL pysaml2
 RUN pip install -r /usr/lib/python3/dist-packages/odoo/requirements.txt
 
 # Install Odoo

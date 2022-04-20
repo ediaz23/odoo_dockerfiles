@@ -7,6 +7,7 @@ SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 ENV LANG C.UTF-8
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         ca-certificates \
@@ -14,9 +15,6 @@ RUN apt-get update && \
         dirmngr \
         fonts-noto-cjk \
         gnupg \
-        libssl-dev \
-        node-less \
-        npm \
         python3-num2words \
         python3-pdfminer \
         python3-pip \
@@ -31,6 +29,25 @@ RUN apt-get update && \
         python3-xlrd \
         python3-xlwt \
         xz-utils \
+        python3-dev \
+        libxml2-dev \
+        libxslt1-dev \
+        libldap2-dev \
+        libssl-dev \
+        libsasl2-dev \
+        libpq-dev \
+        libjpeg-dev \
+        zlib1g-dev \
+        g++ \
+        build-essential \
+        wget \
+        python3-venv \
+        python3-wheel libfreetype6-dev libzip-dev \
+        libtiff5-dev libjpeg62-turbo-dev libopenjp2-7-dev \
+        liblcms2-dev libwebp-dev libharfbuzz-dev libfribidi-dev libxcb1-dev \
+        node-less \
+        npm \
+        iproute2 \
     && curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
     && echo 'ea8277df4297afc507c61122f3c349af142f31e5 wkhtmltox.deb' | sha1sum -c - \
     && apt-get install -y --no-install-recommends ./wkhtmltox.deb \
@@ -53,19 +70,24 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main' > /etc/
 # Install rtlcss (on Debian buster)
 RUN npm install -g rtlcss
 
+COPY odoo14/ /usr/lib/python3/dist-packages/odoo
+RUN ln -s /usr/lib/python3/dist-packages/odoo/odoo-bin /usr/bin/odoo
+RUN rm -rf /usr/lib/python3/dist-packages/odoo/.git/*
+RUN rm -rf /usr/lib/python3/dist-packages/odoo/.github/*
+RUN rm -rf /usr/lib/python3/dist-packages/odoo/.settings/*
+RUN python3 -m pip install --upgrade pip 
+RUN pip install pydevd phonenumbers inotify odoorpc wheel zeep pdf417gen pyOpenSSL
+RUN pip install -r /usr/lib/python3/dist-packages/odoo/requirements.txt
+
 # Install Odoo
 ENV ODOO_VERSION 14.0
-ARG ODOO_RELEASE=20210913
-ARG ODOO_SHA=fcd89fb35456b365368d6400d33664d996e6be4c
-RUN curl -o odoo.deb -sSL http://nightly.odoo.com/${ODOO_VERSION}/nightly/deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb \
-    && echo "${ODOO_SHA} odoo.deb" | sha1sum -c - \
-    && apt-get update \
-    && apt-get -y install --no-install-recommends ./odoo.deb \
-    && rm -rf /var/lib/apt/lists/* odoo.deb
+
 
 # Copy entrypoint script and Odoo configuration file
 COPY ./entrypoint.sh /
 COPY ./odoo.conf /etc/odoo/
+
+RUN useradd -rm -d /home/odoo -s /bin/bash -g root -G sudo -u 1001 odoo
 
 # Set permissions and Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
 RUN chown odoo /etc/odoo/odoo.conf \
