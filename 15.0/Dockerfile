@@ -77,7 +77,7 @@ RUN rm -rf /usr/lib/python3/dist-packages/odoo/.git/*
 RUN rm -rf /usr/lib/python3/dist-packages/odoo/.github/*
 RUN rm -rf /usr/lib/python3/dist-packages/odoo/.settings/*
 RUN python3 -m pip install --upgrade pip setuptools wheel
-RUN pip install pydevd phonenumbers inotify odoorpc zeep pdf417gen pyOpenSSL pysaml2
+RUN pip install pydevd phonenumbers inotify odoorpc zeep pdf417gen pyOpenSSL pysaml2 pydub
 RUN pip install -r /usr/lib/python3/dist-packages/odoo/requirements.txt
 
 # Install Odoo
