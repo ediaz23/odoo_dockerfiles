@@ -81,7 +81,7 @@ RUN pip install pydevd phonenumbers inotify odoorpc zeep pdf417gen pyOpenSSL pys
 RUN pip install -r /usr/lib/python3/dist-packages/odoo/requirements.txt
 
 # Install Odoo
-ENV ODOO_VERSION 16.3
+ENV ODOO_VERSION saas~16.3
 
 
 # Copy entrypoint script and Odoo configuration file
