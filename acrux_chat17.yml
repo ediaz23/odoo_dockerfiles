@@ -1,0 +1,39 @@
+version: '3'
+services:
+ odoo:
+  image: odoo:17.0
+  links:
+   - 'db16:db'
+  ports:
+   - "8032:8069"
+   - "8073:8073"
+   - "8074:8074"
+  volumes:
+   - "${WORKSPACEDOCKER}/acrux_chat17.conf:/etc/odoo/odoo.conf"
+   - "${WORKSPACEODOO}/odoo17:/usr/lib/python3/dist-packages/odoo/"
+   - "${WORKSPACEADDONS}/whatsapp/:/mnt/chat-addons/"
+   #- "${WORKSPACEADDONS}/whatsapp_app/:/mnt/chat-addons/"
+   - "${WORKFOLDER}/ffmpeg-6.0-amd64-static/:/mnt/chat-addons/whatsapp_connector_ffmpeg/lib/"
+   - "${WORKSPACEADDONS}/addons-acruxlab/modulos_clientes:/mnt/modulos_clientes/"
+   - "${WORKSPACEADDONS}/addons-acruxlab/modulos_enviados_x_clientes:/mnt/modulos_enviados_x_clientes/"
+   - "${WORKSPACEADDONS}/odoo_enterprise:/mnt/enterprice-addons"
+   #- "${WORKSPACEADDONS}/apichat-app/:/mnt/apichat-app/"
+   - "${WORKSPACEADDONS}/oca_web/:/mnt/oca_web/"
+   - "${WORKSPACEADDONS}/whatsapp/whatsapp_connector_pack/modules:/mnt/whatsapp_pack"
+   - "${WORKSPACEADDONS}/addons-acruxlab/:/mnt/addons-acruxlab"
+   - "${WORKSPACEADDONS}/whatsapp/modulos_demo:/mnt/chat-demo-addons/"
+   - "${WORKSPACEVPS}/:/mnt/extra-scripts"
+   - "/home/repositorio/:/home/repositorio/"
+   - data-odoo16:/var/lib/odoo
+ db16:
+  image: postgres:12
+  ports:
+  - "5446:5432"
+  environment:
+   - POSTGRES_USER=odoo
+   - POSTGRES_PASSWORD=odoo
+  volumes:
+   - data-pg16:/var/lib/postgresql/data
+volumes:
+ data-odoo16:
+ data-pg16:

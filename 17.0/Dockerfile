@@ -47,15 +47,16 @@ RUN apt-get update && \
         wget \
         python3-venv \
         python3-wheel libfreetype6-dev \
-        libtiff5-dev libjpeg62-turbo-dev libopenjp2-7-dev \
+        libtiff5-dev libopenjp2-7-dev \
         liblcms2-dev libwebp-dev libharfbuzz-dev libfribidi-dev libxcb1-dev \
         libssl-dev \
         node-less \
         npm \
         iproute2 \
         python3-magic \
-        python3-odf && \
-    if [ -z "${TARGETARCH}" ]; then \
+        python3-odf
+
+RUN if [ -z "${TARGETARCH}" ]; then \
         TARGETARCH="$(dpkg --print-architecture)"; \
     fi; \
     WKHTMLTOPDF_ARCH=${TARGETARCH} && \
