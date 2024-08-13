@@ -1,22 +1,13 @@
 FROM debian:stretch-slim
-LABEL org.opencontainers.image.authors="Odoo S.A. <info@odoo.com>"
+MAINTAINER Odoo S.A. <info@odoo.com>
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 
 # Generate locale C.UTF-8 for postgres and general locale data
-ENV LANG=C.UTF-8
-
-# Para imagen que se mueve a archivadas
-RUN echo "" > /etc/apt/sources.list
-RUN echo "deb http://archive.debian.org/debian stretch main" >> /etc/apt/sources.list
-RUN echo "deb-src http://archive.debian.org/debian stretch main" >> /etc/apt/sources.list
-RUN echo "deb http://archive.debian.org/debian stretch-backports main" >> /etc/apt/sources.list
-RUN echo "deb http://archive.debian.org/debian-security stretch/updates main" >> /etc/apt/sources.list
-RUN echo "deb-src http://archive.debian.org/debian-security stretch/updates main" >> /etc/apt/sources.list
-
+ENV LANG C.UTF-8
 
 # Use backports to avoid install some libs with pip
-RUN echo 'deb http://archive.debian.org/debian stretch-backports main' > /etc/apt/sources.list.d/backports.list
+RUN echo 'deb http://deb.debian.org/debian stretch-backports main' > /etc/apt/sources.list.d/backports.list
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 RUN apt-get update && \
@@ -55,7 +46,7 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/* wkhtmltox.deb
 
 # install latest postgresql-client
-RUN echo 'deb http://archive.postgresql.org/pub/repos/apt/ stretch-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
+RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
         && GNUPGHOME="$(mktemp -d)" \
         && export GNUPGHOME \
         && repokey='B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8' \
@@ -93,7 +84,7 @@ RUN pip install pydevd phonenumbers inotify odoorpc zeep pdf417gen pdf2image set
 RUN pip install -r /usr/lib/python3/dist-packages/odoo/requirements.txt
 
 # Install Odoo
-ENV ODOO_VERSION=12.0
+ENV ODOO_VERSION 12.0
 
 
 # Copy entrypoint script and Odoo configuration file
@@ -112,7 +103,7 @@ VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
 EXPOSE 8069 8071 8072
 
 # Set the default config file
-ENV ODOO_RC=/etc/odoo/odoo.conf
+ENV ODOO_RC /etc/odoo/odoo.conf
 
 COPY wait-for-psql.py /usr/local/bin/wait-for-psql.py
 
