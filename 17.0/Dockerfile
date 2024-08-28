@@ -1,10 +1,10 @@
 FROM ubuntu:jammy
-MAINTAINER Odoo S.A. <info@odoo.com>
+LABEL org.opencontainers.image.authors="Odoo S.A. <info@odoo.com>"
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 
 # Generate locale C.UTF-8 for postgres and general locale data
-ENV LANG C.UTF-8
+ENV LANG=C.UTF-8
 
 # Retrieve the target architecture to install the correct wkhtmltopdf package
 ARG TARGETARCH
@@ -22,7 +22,6 @@ RUN apt-get update && \
         python3-num2words \
         python3-pdfminer \
         python3-pip \
-        python3-phonenumbers \
         python3-pyldap \
         python3-qrcode \
         python3-renderpm \
@@ -93,11 +92,11 @@ RUN rm -rf /usr/lib/python3/dist-packages/odoo/.git/*
 RUN rm -rf /usr/lib/python3/dist-packages/odoo/.github/*
 RUN rm -rf /usr/lib/python3/dist-packages/odoo/.settings/*
 RUN python3 -m pip install --upgrade pip setuptools wheel
-RUN pip install pydevd phonenumbers inotify odoorpc zeep pdf417gen pyOpenSSL pysaml2 pydub
+RUN pip install pydevd phonenumbers inotify odoorpc zeep pdf417gen pyOpenSSL pysaml2 pydub pycryptodome
 RUN pip install -r /usr/lib/python3/dist-packages/odoo/requirements.txt
 
 # Install Odoo
-ENV ODOO_VERSION 17.0
+ENV ODOO_VERSION=17.0
 
 
 # Copy entrypoint script and Odoo configuration file
@@ -116,7 +115,7 @@ VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
 EXPOSE 8069 8073 8074
 
 # Set the default config file
-ENV ODOO_RC /etc/odoo/odoo.conf
+ENV ODOO_RC=/etc/odoo/odoo.conf
 
 COPY wait-for-psql.py /usr/local/bin/wait-for-psql.py
 

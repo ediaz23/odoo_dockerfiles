@@ -28,7 +28,6 @@ RUN apt-get update && \
         gnupg \
         python3-num2words \
         python3-pip \
-        python3-phonenumbers \
         python3-pyldap \
         python3-qrcode \
         python3-renderpm \
@@ -89,7 +88,7 @@ RUN rm -rf /usr/lib/python3/dist-packages/odoo/.git/*
 RUN rm -rf /usr/lib/python3/dist-packages/odoo/.github/*
 RUN rm -rf /usr/lib/python3/dist-packages/odoo/.settings/*
 RUN python3 -m pip install --upgrade pip setuptools wheel
-RUN pip install pydevd phonenumbers inotify odoorpc zeep pdf417gen pdf2image setuptools pydub
+RUN pip install pydevd phonenumbers inotify odoorpc zeep pdf417gen pdf2image pydub
 RUN pip install -r /usr/lib/python3/dist-packages/odoo/requirements.txt
 
 # Install Odoo

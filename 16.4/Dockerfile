@@ -1,10 +1,10 @@
 FROM debian:bullseye-slim
-MAINTAINER Odoo S.A. <info@odoo.com>
+LABEL org.opencontainers.image.authors="Odoo S.A. <info@odoo.com>"
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 
 # Generate locale C.UTF-8 for postgres and general locale data
-ENV LANG C.UTF-8
+ENV LANG=C.UTF-8
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 
@@ -18,7 +18,6 @@ RUN apt-get update && \
         python3-num2words \
         python3-pdfminer \
         python3-pip \
-        python3-phonenumbers \
         python3-pyldap \
         python3-qrcode \
         python3-renderpm \
@@ -81,7 +80,7 @@ RUN pip install pydevd phonenumbers inotify odoorpc zeep pdf417gen pyOpenSSL pys
 RUN pip install -r /usr/lib/python3/dist-packages/odoo/requirements.txt
 
 # Install Odoo
-ENV ODOO_VERSION saas~16.4
+ENV ODOO_VERSION=saas~16.4
 
 
 # Copy entrypoint script and Odoo configuration file
@@ -100,7 +99,7 @@ VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
 EXPOSE 8069 8071 8072
 
 # Set the default config file
-ENV ODOO_RC /etc/odoo/odoo.conf
+ENV ODOO_RC=/etc/odoo/odoo.conf
 
 COPY wait-for-psql.py /usr/local/bin/wait-for-psql.py
 
