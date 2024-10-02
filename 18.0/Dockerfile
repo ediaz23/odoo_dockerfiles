@@ -19,12 +19,7 @@ RUN apt-get update && \
         dirmngr \
         fonts-noto-cjk \
         gnupg \
-        libssl-dev \
-        node-less \
-        npm \
-        python3-magic \
         python3-num2words \
-        python3-odf \
         python3-pdfminer \
         python3-pip \
         python3-pyldap \
@@ -53,7 +48,12 @@ RUN apt-get update && \
         python3-wheel libfreetype6-dev \
         libtiff5-dev libopenjp2-7-dev \
         liblcms2-dev libwebp-dev libharfbuzz-dev libfribidi-dev libxcb1-dev \
-        iproute2
+        libssl-dev \
+        node-less \
+        npm \
+        iproute2 \
+        python3-magic \
+        python3-odf
 
 RUN if [ -z "${TARGETARCH}" ]; then \
         TARGETARCH="$(dpkg --print-architecture)"; \
@@ -83,21 +83,20 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ jammy-pgdg main' > /etc/a
     && rm -f /etc/apt/sources.list.d/pgdg.list \
     && rm -rf /var/lib/apt/lists/*
 
-# Install rtlcss (on Debian jammy)
+# Install rtlcss (on Debian bullseye)
 RUN npm install -g rtlcss
 
-COPY odoo17/ /usr/lib/python3/dist-packages/odoo
+COPY odoo18/ /usr/lib/python3/dist-packages/odoo
 RUN ln -s /usr/lib/python3/dist-packages/odoo/odoo-bin /usr/bin/odoo
 RUN rm -rf /usr/lib/python3/dist-packages/odoo/.git/*
 RUN rm -rf /usr/lib/python3/dist-packages/odoo/.github/*
 RUN rm -rf /usr/lib/python3/dist-packages/odoo/.settings/*
 RUN python3 -m pip install --upgrade pip setuptools wheel
-RUN python3 -m pip install pydevd phonenumbers inotify odoorpc zeep pdf417gen pyOpenSSL pysaml2 pydub pycryptodome
-RUN python3 -m pip install -r /usr/lib/python3/dist-packages/odoo/requirements.txt
+RUN pip install pydevd phonenumbers inotify odoorpc zeep pdf417gen pyOpenSSL pysaml2 pydub pycryptodome
+RUN pip install -r /usr/lib/python3/dist-packages/odoo/requirements.txt
 
 # Install Odoo
-ENV ODOO_VERSION=17.0
-ARG ODOO_RELEASE=20241108
+ENV ODOO_VERSION=18.0
 
 
 # Copy entrypoint script and Odoo configuration file
