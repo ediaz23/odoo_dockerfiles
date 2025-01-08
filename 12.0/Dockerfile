@@ -82,7 +82,7 @@ RUN echo "deb http://deb.nodesource.com/node_8.x stretch main" > /etc/apt/source
     && rm -rf /var/lib/apt/lists/*
 
 
-COPY odoo12/ /usr/lib/python3/dist-packages/odoo
+COPY odoo/ /usr/lib/python3/dist-packages/odoo
 RUN ln -s /usr/lib/python3/dist-packages/odoo/odoo-bin /usr/bin/odoo
 RUN rm -rf /usr/lib/python3/dist-packages/odoo/.git/*
 RUN rm -rf /usr/lib/python3/dist-packages/odoo/.github/*

@@ -70,7 +70,7 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ bullseye-pgdg main' > /et
 # Install rtlcss (on Debian bullseye)
 RUN npm install -g rtlcss
 
-COPY odoo16/ /usr/lib/python3/dist-packages/odoo
+COPY odoo/ /usr/lib/python3/dist-packages/odoo
 RUN ln -s /usr/lib/python3/dist-packages/odoo/odoo-bin /usr/bin/odoo
 RUN rm -rf /usr/lib/python3/dist-packages/odoo/.git/*
 RUN rm -rf /usr/lib/python3/dist-packages/odoo/.github/*
