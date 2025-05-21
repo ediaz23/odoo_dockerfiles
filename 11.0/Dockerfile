@@ -1,10 +1,10 @@
 FROM debian:stretch-slim
-MAINTAINER Odoo S.A. <info@odoo.com>
+LABEL org.opencontainers.image.authors="Odoo S.A. <info@odoo.com>"
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 
 # Generate locale C.UTF-8 for postgres and general locale data
-ENV LANG C.UTF-8
+ENV LANG=C.UTF-8
 
 # Use backports to avoid install some libs with pip
 RUN echo 'deb http://deb.debian.org/debian stretch-backports main' > /etc/apt/sources.list.d/backports.list
@@ -78,7 +78,7 @@ RUN pip install /tmp/python-meli/
 RUN rm -rf /tmp/python-meli/
 
 # Install Odoo
-ENV ODOO_VERSION 11.0
+ENV ODOO_VERSION=11.0
 
 
 # Copy entrypoint script and Odoo configuration file
@@ -97,7 +97,7 @@ VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
 EXPOSE 8069 8071 8072
 
 # Set the default config file
-ENV ODOO_RC /etc/odoo/odoo.conf
+ENV ODOO_RC=/etc/odoo/odoo.conf
 
 COPY wait-for-psql.py /usr/local/bin/wait-for-psql.py
 
