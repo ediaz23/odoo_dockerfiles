@@ -6,8 +6,14 @@ SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 # Generate locale C.UTF-8 for postgres and general locale data
 ENV LANG=C.UTF-8
 
-# Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
+# Para imagen que se mueve a archivadas
+RUN echo "" > /etc/apt/sources.list
+RUN echo "deb http://archive.debian.org/debian buster main" >> /etc/apt/sources.list
+RUN echo "deb-src http://archive.debian.org/debian buster main" >> /etc/apt/sources.list
+RUN echo "deb http://archive.debian.org/debian-security buster/updates main" >> /etc/apt/sources.list
+RUN echo "deb-src http://archive.debian.org/debian-security buster/updates main" >> /etc/apt/sources.list
 
+# Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         ca-certificates \
