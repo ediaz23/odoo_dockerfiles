@@ -94,6 +94,7 @@ RUN rm -rf /usr/lib/python3/dist-packages/odoo/.settings/*
 RUN python3 -m pip install --upgrade pip setuptools wheel
 RUN python3 -m pip install pydevd phonenumbers inotify odoorpc zeep pdf417gen pyOpenSSL pysaml2 pydub pycryptodome pydantic
 RUN python3 -m pip install -r /usr/lib/python3/dist-packages/odoo/requirements.txt
+RUN python3 -m pip install openai anthropic google-genai
 
 # Install Odoo
 ENV ODOO_VERSION=17.0

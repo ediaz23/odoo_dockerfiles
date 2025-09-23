@@ -1,4 +1,4 @@
-FROM ubuntu:jammy
+FROM ubuntu:noble
 LABEL org.opencontainers.image.authors="Odoo S.A. <info@odoo.com>"
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
@@ -19,13 +19,17 @@ RUN apt-get update && \
         dirmngr \
         fonts-noto-cjk \
         gnupg \
+        libssl-dev \
+        node-less \
+        npm \
+        python3-magic \
         python3-num2words \
+        python3-odf \
         python3-pdfminer \
-        python3-pip \
+        python3-phonenumbers \
         python3-pyldap \
         python3-qrcode \
         python3-renderpm \
-        python3-setuptools \
         python3-slugify \
         python3-vobject \
         python3-watchdog \
@@ -36,7 +40,6 @@ RUN apt-get update && \
         libxml2-dev \
         libxslt1-dev \
         libldap2-dev \
-        libssl-dev \
         libsasl2-dev \
         libpq-dev \
         libjpeg-dev \
@@ -45,15 +48,10 @@ RUN apt-get update && \
         build-essential \
         wget \
         python3-venv \
-        python3-wheel libfreetype6-dev \
+        libfreetype6-dev \
         libtiff5-dev libopenjp2-7-dev \
         liblcms2-dev libwebp-dev libharfbuzz-dev libfribidi-dev libxcb1-dev \
-        libssl-dev \
-        node-less \
-        npm \
-        iproute2 \
-        python3-magic \
-        python3-odf
+        iproute2
 
 RUN if [ -z "${TARGETARCH}" ]; then \
         TARGETARCH="$(dpkg --print-architecture)"; \
@@ -70,7 +68,7 @@ RUN if [ -z "${TARGETARCH}" ]; then \
     && rm -rf /var/lib/apt/lists/* wkhtmltox.deb
 
 # install latest postgresql-client
-RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ jammy-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
+RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ noble-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
     && GNUPGHOME="$(mktemp -d)" \
     && export GNUPGHOME \
     && repokey='B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8' \
@@ -83,7 +81,7 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ jammy-pgdg main' > /etc/a
     && rm -f /etc/apt/sources.list.d/pgdg.list \
     && rm -rf /var/lib/apt/lists/*
 
-# Install rtlcss (on Debian bullseye)
+# Install rtlcss (on Debian buster)
 RUN npm install -g rtlcss
 
 COPY odoo/ /usr/lib/python3/dist-packages/odoo
@@ -91,9 +89,11 @@ RUN ln -s /usr/lib/python3/dist-packages/odoo/odoo-bin /usr/bin/odoo
 RUN rm -rf /usr/lib/python3/dist-packages/odoo/.git/*
 RUN rm -rf /usr/lib/python3/dist-packages/odoo/.github/*
 RUN rm -rf /usr/lib/python3/dist-packages/odoo/.settings/*
-RUN python3 -m pip install --upgrade pip setuptools wheel
-RUN pip install pydevd phonenumbers inotify odoorpc zeep pdf417gen pyOpenSSL pysaml2 pydub pycryptodome
-RUN pip install -r /usr/lib/python3/dist-packages/odoo/requirements.txt
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+RUN python3 get-pip.py --break-system-packages && rm get-pip.py
+RUN pip install --break-system-packages --upgrade pip setuptools wheel
+RUN pip install --break-system-packages pydevd inotify odoorpc zeep pdf417gen pyOpenSSL pysaml2 pydub pycryptodome
+RUN pip install --break-system-packages -r /usr/lib/python3/dist-packages/odoo/requirements.txt
 
 # Install Odoo
 ENV ODOO_VERSION=19.0
