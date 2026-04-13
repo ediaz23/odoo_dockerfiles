@@ -6,4 +6,4 @@ This is the Git repo of the official Docker image for [Odoo](https://registry.hu
 The full readme is generated over in [docker-library/docs](https://github.com/docker-library/docs), specifically in [docker-library/docs/odoo](https://github.com/docker-library/docs/tree/master/odoo).
 
 
-docker build -t odoo/15.0 . --no-cache --network=host
+docker buildx build -t odoo/15.0 . --network=host --no-cache
