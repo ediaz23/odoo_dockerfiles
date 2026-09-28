@@ -1,1 +1,8 @@
-.idea
+__pycache__/
+*.directory
+*.pyc
+.project
+.pydevproject
+.settings
+.claude/
+
