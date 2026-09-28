@@ -84,16 +84,15 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ noble-pgdg main' > /etc/a
 # Install rtlcss (on Debian buster)
 RUN npm install -g rtlcss
 
-COPY odoo/ /usr/lib/python3/dist-packages/odoo
+# El source de Odoo NO va en la imagen: se monta en /usr/lib/python3/dist-packages/odoo
+# El symlink queda colgando hasta que se monta el volumen.
 RUN ln -s /usr/lib/python3/dist-packages/odoo/odoo-bin /usr/bin/odoo
-RUN rm -rf /usr/lib/python3/dist-packages/odoo/.git/*
-RUN rm -rf /usr/lib/python3/dist-packages/odoo/.github/*
-RUN rm -rf /usr/lib/python3/dist-packages/odoo/.settings/*
 RUN curl -sS https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 RUN python3 get-pip.py --break-system-packages && rm get-pip.py
 RUN pip install --break-system-packages --upgrade pip setuptools wheel
 RUN pip install --break-system-packages pydevd inotify odoorpc zeep pdf417gen pyOpenSSL pysaml2 pydub pycryptodome
-RUN pip install --break-system-packages -r /usr/lib/python3/dist-packages/odoo/requirements.txt
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --break-system-packages -r /tmp/requirements.txt && rm /tmp/requirements.txt
 
 # Install Odoo
 ENV ODOO_VERSION=19.0
@@ -107,8 +106,8 @@ RUN useradd -rm -d /home/odoo -s /bin/bash -g root -G sudo -u 1001 odoo
 
 # Set permissions and Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
 RUN chown odoo /etc/odoo/odoo.conf \
-    && mkdir -p /mnt/extra-addons \
-    && chown -R odoo /mnt/extra-addons
+    && mkdir -p /mnt/extra-addons /var/lib/odoo \
+    && chown -R odoo /mnt/extra-addons /var/lib/odoo
 VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
 
 # Expose Odoo services

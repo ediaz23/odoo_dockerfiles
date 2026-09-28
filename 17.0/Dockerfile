@@ -86,14 +86,13 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ jammy-pgdg main' > /etc/a
 # Install rtlcss (on Debian jammy)
 RUN npm install -g rtlcss
 
-COPY odoo/ /usr/lib/python3/dist-packages/odoo
+# El source de Odoo NO va en la imagen: se monta en /usr/lib/python3/dist-packages/odoo
+# El symlink queda colgando hasta que se monta el volumen.
 RUN ln -s /usr/lib/python3/dist-packages/odoo/odoo-bin /usr/bin/odoo
-RUN rm -rf /usr/lib/python3/dist-packages/odoo/.git/*
-RUN rm -rf /usr/lib/python3/dist-packages/odoo/.github/*
-RUN rm -rf /usr/lib/python3/dist-packages/odoo/.settings/*
 RUN python3 -m pip install --upgrade pip setuptools wheel
 RUN python3 -m pip install pydevd phonenumbers inotify odoorpc zeep pdf417gen pyOpenSSL pysaml2 pydub pycryptodome pydantic
-RUN python3 -m pip install -r /usr/lib/python3/dist-packages/odoo/requirements.txt
+COPY requirements.txt /tmp/requirements.txt
+RUN python3 -m pip install -r /tmp/requirements.txt && rm /tmp/requirements.txt
 RUN python3 -m pip install openai anthropic google-genai
 
 # Install Odoo
@@ -109,8 +108,8 @@ RUN useradd -rm -d /home/odoo -s /bin/bash -g root -G sudo -u 1001 odoo
 
 # Set permissions and Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
 RUN chown odoo /etc/odoo/odoo.conf \
-    && mkdir -p /mnt/extra-addons \
-    && chown -R odoo /mnt/extra-addons
+    && mkdir -p /mnt/extra-addons /var/lib/odoo \
+    && chown -R odoo /mnt/extra-addons /var/lib/odoo
 VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
 
 # Expose Odoo services
