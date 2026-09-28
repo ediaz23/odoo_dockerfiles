@@ -6,6 +6,15 @@ SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 # Generate locale C.UTF-8 for postgres and general locale data
 ENV LANG=C.UTF-8
 
+# Para imagen que se mueve a archivadas
+# bullseye salio de LTS: el indice de bullseye-security sigue publicado pero el pool
+# ya no tiene los .deb, por eso se apunta al snapshot de la fecha de la imagen base.
+RUN echo "" > /etc/apt/sources.list
+RUN echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list
+RUN echo "deb http://deb.debian.org/debian bullseye-updates main" >> /etc/apt/sources.list
+RUN echo "deb http://snapshot.debian.org/archive/debian-security/20260824T000000Z bullseye-security main" >> /etc/apt/sources.list
+RUN echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid-until
+
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 
 RUN apt-get update && \
@@ -54,7 +63,7 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/* wkhtmltox.deb
 
 # install latest postgresql-client
-RUN echo 'deb http://archive.postgresql.org/pub/repos/apt/ buster-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
+RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ bullseye-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
     && GNUPGHOME="$(mktemp -d)" \
     && export GNUPGHOME \
     && repokey='B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8' \
