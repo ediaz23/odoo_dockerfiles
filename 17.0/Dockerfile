@@ -93,6 +93,7 @@ RUN python3 -m pip install --upgrade pip setuptools wheel
 RUN python3 -m pip install pydevd phonenumbers inotify odoorpc zeep pdf417gen pyOpenSSL pysaml2 pydub pycryptodome pydantic
 COPY requirements.txt /tmp/requirements.txt
 RUN python3 -m pip install -r /tmp/requirements.txt && rm /tmp/requirements.txt
+RUN python3 -m pip install "cryptography==42.0.8" "pyopenssl==24.1.0" "urllib3==2.0.7" "requests==2.31.0"
 RUN python3 -m pip install openai anthropic google-genai
 
 # Install Odoo
